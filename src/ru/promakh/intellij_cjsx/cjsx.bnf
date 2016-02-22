@@ -1,0 +1,359 @@
+{
+  parserClass="ru.promakh.intellij_cjsx.parser.CjsxParser"
+
+  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  psiClassPrefix="Cjsx"
+  psiImplClassSuffix="Impl"
+  psiPackage="ru.promakh.intellij_cjsx.psi"
+  psiImplPackage="ru.promakh.intellij_cjsx.psi.impl"
+
+  elementTypeHolderClass="ru.promakh.intellij_cjsx.psi.CjsxTypes"
+  elementTypeClass="ru.promakh.intellij_cjsx.psi.CjsxElementType"
+  tokenTypeClass="ru.promakh.intellij_cjsx.psi.CjsxTokenType"
+
+//  psiImplUtilClass="ru.promakh.intellij_cjsx.psi.impl.CjsxPsiImplUtil"
+
+  tokens = [
+    TERMINATOR="regexp:\n|;"
+//    INDENT="regexp:(  )|\t"
+    INDENT="regexp:(\s)|\t"
+
+//    IDENTIFIER_T ="regexp:(?!\d)((?:(?!\s)[$\w\x7f-\uffff])+)([^\n\S]*:(?!:))?"
+    IDENTIFIER_T ="regexp:\w+"
+
+//    NUMBER="regexp:(0b[01]+)|(0o[0-7]+)|(0x[\da-f]+:)|(\d*\.?\d+(?:e[+-]?\d+)?)"
+    NUMBER="regexp:\d+(\.\d+)*"
+
+    CATCH_T='catch'
+    CLASS_T='class'
+    HERECOMMENT="regexp:#.*"
+    STATEMENT_T="regexp:break|contunue"
+    SUPER="super"
+    RETURN_T="return"
+    IF_T='regexp:if|unless'
+    ELSE='else'
+    FOR_T='for'
+    OWN='own'
+    BY='by'
+    FORIN='in'
+    FOROF='of'
+    WHEN_T='when'
+    WHILE_T='while'
+    UNTIL='until'
+    FROM='from'
+    SWITCH_T='switch'
+    LOOP_T='loop'
+    THROW_T='throw'
+    THIS_T='this'
+    EXTENDS='extends'
+    YIELD='yield'
+    TRY_T='try'
+
+    STRING_T='regexp:"([^"]|\\")*"';
+    STRING_START='"""'
+    STRING_END='"""'
+
+    REGEX_T="//"
+    REGEX_START="///"
+    REGEX_END="///"
+
+    UNDEFINED='undefined'
+    NULL='null'
+    BOOL='regexp:true|false'
+
+    PARAM_START='('
+    PARAM_END=')'
+    FUNC_EXIST='?'
+
+    MATH="regexp:[*]|[\/]{1,2}|[%]{1,2}"
+  ]
+}
+
+Root ::= Body?
+
+Body ::= Line
+       | Body TERMINATOR Line
+       | Body TERMINATOR
+
+Line ::= Expression
+       | Statement
+
+Statement ::= Return
+           | Comment
+           | STATEMENT_T
+
+Expression ::= Assign
+             | Invocation
+             | Code
+             | Operation
+             | Value
+             | If
+             | Try
+             | While
+             | For
+             | Switch
+             | ClassDeclaration
+             | Throw
+
+Block    ::= INDENT OUTDENT
+           | INDENT Body OUTDENT
+
+Identifier ::= IDENTIFIER_T 
+
+AlphaNumeric ::= NUMBER | String
+
+String ::= STRING_T
+         | STRING_START Body STRING_END
+
+Regex ::= REGEX_T
+        | REGEX_START Invocation REGEX_END
+
+Literal  ::= AlphaNumeric
+           | JS
+           | Regex
+           | DEBUGGER
+           | UNDEFINED
+           | NULL
+           | BOOL
+
+Assign   ::= Assignable '=' Expression
+           | Assignable '=' TERMINATOR Expression
+           | Assignable '=' INDENT Expression OUTDENT
+
+AssignObj
+         ::= ObjAssignable
+           | ObjAssignable ':' Expression
+           | ObjAssignable ':' INDENT Expression OUTDENT
+           | SimpleObjectAssignable '=' Expression
+           | SimpleObjectAssignable '=' INDENT Expression OUTDENT
+           | Comment
+
+SimpleObjectAssignable ::= Identifier | ThisProperty
+ObjAssignable ::= SimpleObjectAssignable | AlphaNumeric
+
+Return   ::= RETURN_T Expression
+           | RETURN_T
+
+Comment  ::= HERECOMMENT
+
+Code     ::= PARAM_START ParamList PARAM_END FuncGlyph Block
+           | FuncGlyph Block
+
+FuncGlyph ::= '->' | '=>'
+
+OptComma ::= ','?
+
+ParamList ::= ''
+            | Param
+            | ParamList ',' Param
+            | ParamList OptComma TERMINATOR Param
+            | ParamList OptComma INDENT ParamList OptComma OUTDENT
+
+Param    ::= ParamVar
+           | ParamVar '...'
+           | ParamVar '=' Expression
+           | '...'
+
+ParamVar ::= Identifier
+           | ThisProperty
+           | Array
+           | Object
+
+Splat    ::= Expression '...'
+
+SimpleAssignable
+         ::= Identifier
+           | Value Accessor
+           | Invocation Accessor
+           | ThisProperty
+
+Assignable
+         ::= SimpleAssignable
+           | Array
+           | Object
+
+Value    ::= Assignable
+           | Literal
+           | Parenthetical
+           | Range
+           | This
+
+Accessor ::= '.' Identifier
+           | '?.' Identifier
+           | '::' Identifier
+           | '?::' Identifier
+           | '::'
+           | Index
+
+Index ::= INDEX_START IndexValue INDEX_END
+        | INDEX_SOAK Index
+
+IndexValue ::= Expression
+             | Slice
+
+Object   ::= '{' AssignList OptComma '}'
+
+AssignList ::= ''
+             | AssignObj
+             | AssignList ',' AssignObj
+             | AssignList OptComma TERMINATOR AssignObj
+             | AssignList OptComma INDENT AssignList OptComma OUTDENT
+
+ClassDeclaration ::= CLASS_T
+                   | CLASS_T Block
+                   | CLASS_T EXTENDS Expression
+                   | CLASS_T EXTENDS Expression Block
+                   | CLASS_T SimpleAssignable
+                   | CLASS_T SimpleAssignable Block
+                   | CLASS_T SimpleAssignable EXTENDS Expression
+                   | CLASS_T SimpleAssignable EXTENDS Expression Block
+
+Invocation ::= Value OptFuncExist Arguments
+             | Invocation OptFuncExist Arguments
+             | SUPER
+             | SUPER Arguments
+
+OptFuncExist ::= FUNC_EXIST?
+
+Arguments ::= CALL_START CALL_END
+           | CALL_START ArgList OptComma CALL_END
+
+This     ::= THIS_T
+           | '@'
+
+ThisProperty ::= '@' Identifier
+
+Array    ::= '[' ']'
+           | '[' ArgList OptComma ']'
+
+RangeDots
+         ::= '..'
+           | '...'
+
+Range    ::= '[' Expression RangeDots Expression ']'
+
+Slice    ::= Expression RangeDots Expression
+           | Expression RangeDots
+           | RangeDots Expression
+           | RangeDots
+
+ArgList  ::= Arg
+           | ArgList ',' Arg
+           | ArgList OptComma TERMINATOR Arg
+           | INDENT ArgList OptComma OUTDENT
+           | ArgList OptComma INDENT ArgList OptComma OUTDENT
+
+Arg      ::= Expression
+           | Splat
+           | '...'
+
+SimpleArgs ::= Expression
+             | SimpleArgs ',' Expression
+
+Try      ::= TRY_T Block
+           | TRY_T Block Catch
+           | TRY_T Block FINALLY Block
+           | TRY_T Block Catch FINALLY Block
+
+Catch    ::= CATCH_T Identifier Block
+           | CATCH_T Object Block
+           | CATCH_T Block
+
+Throw    ::= THROW_T Expression
+
+Parenthetical
+         ::= '(' Body ')'
+           | '(' INDENT Body OUTDENT ')'
+
+WhileSource
+         ::= WHILE_T Expression
+           | WHILE_T Expression WHEN_T Expression
+           | UNTIL Expression
+           | UNTIL Expression WHEN_T Expression
+
+While    ::= WhileSource Block
+           | Statement WhileSource
+           | Expression WhileSource
+           | Loop
+
+Loop     ::= LOOP_T Block
+           | LOOP_T Expression
+
+For      ::= Statement ForBody
+           | Expression ForBody
+           | ForBody Block
+
+ForBody  ::= FOR_T Range
+           | FOR_T Range BY Expression
+           | ForStart ForSource
+
+ForStart ::= FOR_T ForVariables
+           | FOR_T OWN ForVariables
+
+ForValue ::= Identifier
+           | ThisProperty
+           | Array
+           | Object
+
+ForVariables
+         ::= ForValue
+           | ForValue ',' ForValue
+
+ForSource
+         ::= FORIN Expression
+           | FOROF Expression
+           | FORIN Expression WHEN_T Expression
+           | FOROF Expression WHEN_T Expression
+           | FORIN Expression BY Expression
+           | FORIN Expression WHEN_T Expression BY Expression
+           | FORIN Expression BY Expression WHEN_T Expression
+
+Switch   ::= SWITCH_T Expression INDENT Whens OUTDENT
+           | SWITCH_T Expression INDENT Whens ELSE Block OUTDENT
+           | SWITCH_T INDENT Whens OUTDENT
+           | SWITCH_T INDENT Whens ELSE Block OUTDENT
+
+Whens    ::= When
+           | Whens When
+
+When     ::= LEADING_WHEN SimpleArgs Block
+           | LEADING_WHEN SimpleArgs Block TERMINATOR
+
+IfBlock  ::= IF_T Expression Block
+           | IfBlock ELSE IF_T Expression Block
+
+If       ::= IfBlock
+           | IfBlock ELSE Block
+           | Statement POST_IF Expression
+           | Expression POST_IF Expression
+
+Operation
+         ::= UNARY Expression
+           | UNARY_MATH Expression
+           | '-' Expression
+           | '+' Expression
+           | YIELD Statement
+           | YIELD Expression
+           | YIELD FROM Expression
+
+           | '--' SimpleAssignable
+           | '++' SimpleAssignable
+           | SimpleAssignable '--'
+           | SimpleAssignable '++'
+
+           | Expression '?'
+           | Expression '+' Expression
+           | Expression '-' Expression
+
+           | Expression MATH Expression
+           | Expression '**' Expression
+           | Expression SHIFT Expression
+           | Expression COMPARE Expression
+           | Expression LOGIC Expression
+           | Expression RELATION Expression
+
+           | SimpleAssignable COMPOUND_ASSIGN Expression
+           | SimpleAssignable COMPOUND_ASSIGN INDENT Expression OUTDENT
+           | SimpleAssignable COMPOUND_ASSIGN TERMINATOR Expression
+           | SimpleAssignable EXTENDS Expression
