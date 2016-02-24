@@ -1,5 +1,10 @@
+# user IDE settings
 /.idea/copyright
 /.idea/.name
 /.idea/workspace.xml
 
+# build
 /out
+
+# libraries
+/libs/coffeescript/lib/coffeescript.jar
