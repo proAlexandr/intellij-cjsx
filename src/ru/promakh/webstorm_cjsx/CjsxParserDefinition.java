@@ -1,4 +1,4 @@
-package ru.promakh.intellij_cjsx;
+package ru.promakh.webstorm_cjsx;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.Language;
@@ -9,20 +9,26 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.FileViewProvider;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IFileElementType;
 import com.intellij.psi.tree.TokenSet;
+import org.coffeescript.lang.lexer.CoffeeScriptTokenSets;
+import org.coffeescript.lang.parser.CoffeeScriptParserDefinition;
 import org.jetbrains.annotations.NotNull;
-import ru.promakh.intellij_cjsx.parser.CjsxParser;
-import ru.promakh.intellij_cjsx.psi.CjsxTokenType;
-import ru.promakh.intellij_cjsx.psi.CjsxTypes;
+import ru.promakh.webstorm_cjsx.lang.CjsxParser;
+import ru.promakh.webstorm_cjsx.psi.CjsxFile;
 
 public class CjsxParserDefinition implements ParserDefinition {
-    public static final TokenSet WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE);
-    public static final TokenSet COMMENTS = TokenSet.create(CjsxTokenType.COMMENT);
+//    public static final TokenSet WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE);
+//    public static final TokenSet COMMENTS = TokenSet.create(CjsxTokenType.COMMENT);
 
-    public static final IFileElementType FILE
-            = new IFileElementType(Language.findInstance(CjsxLanguage.class));
+
+    private CoffeeScriptParserDefinition cpd = new CoffeeScriptParserDefinition();
+    public static final IFileElementType FILE;
+
+    static {
+        Language languageInstance = Language.findInstance(CjsxLanguage.class);
+        FILE = new IFileElementType(languageInstance);
+    }
 
     @NotNull
     @Override
@@ -43,30 +49,32 @@ public class CjsxParserDefinition implements ParserDefinition {
     @NotNull
     @Override
     public TokenSet getWhitespaceTokens() {
-        return WHITE_SPACES;
+        return CoffeeScriptTokenSets.WHITESPACE_TOKEN_SET;
     }
 
     @NotNull
     @Override
     public TokenSet getCommentTokens() {
-        return COMMENTS;
+        return CoffeeScriptTokenSets.COMMENTS_TOKEN_SET;
     }
 
     @NotNull
     @Override
     public TokenSet getStringLiteralElements() {
-        return TokenSet.EMPTY;
+        return CoffeeScriptTokenSets.STRING_TOKEN_SET;
     }
+
 
     @NotNull
     @Override
     public PsiElement createElement(ASTNode node) {
-        return CjsxTypes.Factory.createElement(node);
+        return cpd.createElement(node);
     }
 
     @Override
     public PsiFile createFile(FileViewProvider viewProvider) {
-        return new CjsxFile(viewProvider);
+        PsiFile  file = new CjsxFile(viewProvider);
+        return file;
     }
 
     @Override

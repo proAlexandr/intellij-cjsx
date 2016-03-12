@@ -2,9 +2,10 @@
 /.idea/copyright
 /.idea/.name
 /.idea/workspace.xml
+/.idea/dictionaries
 
 # build
 /out
 
-# libraries
-/libs/coffeescript/lib/coffeescript.jar
+# tests
+/grammar.bnf

@@ -1,4 +1,4 @@
-package ru.promakh.intellij_cjsx;
+package ru.promakh.webstorm_cjsx;
 
 import com.intellij.lang.Language;
 
