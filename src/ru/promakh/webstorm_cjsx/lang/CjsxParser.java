@@ -2,11 +2,14 @@ package ru.promakh.webstorm_cjsx.lang;
 
 import com.intellij.lang.PsiBuilder;
 import com.intellij.psi.tree.IElementType;
+import com.intellij.util.containers.Stack;
 import org.coffeescript.lang.lexer.CoffeeScriptTokenTypes;
 import ru.promakh.webstorm_cjsx.psi.CjsxElementType;
 import ru.promakh.webstorm_cjsx.psi.CjsxTokenType;
 
 public class CjsxParser extends CoffeeScriptParser {
+    private final Stack<Object> tagsNesting = new Stack<>();
+
     @Override
     protected boolean parseExpression() {
         boolean skip = false;
@@ -15,9 +18,11 @@ public class CjsxParser extends CoffeeScriptParser {
         }
 
         if (!skip) {
-            if (this.isCurrentTokenIn(CoffeeScriptTokenTypes.LT)) {
-                this.parseTag();
-            } else if (this.isCurrentTokenIn(new IElementType[]{CoffeeScriptTokenTypes.DO_KEYWORD})) {
+            if (isCurrentTokenIn(CoffeeScriptTokenTypes.LT)) {
+                parseTag();
+            } else if (isInTagBody() && isCurrentTokenIn(CoffeeScriptTokenTypes.BRACE_START)) {
+                parseTagInterpolation();
+            }else if (this.isCurrentTokenIn(new IElementType[]{CoffeeScriptTokenTypes.DO_KEYWORD})) {
                 this.parseDoExpression();
             } else if (this.isCurrentTokenIn(new IElementType[]{CoffeeScriptTokenTypes.CLASS})) {
                 this.parseClass();
@@ -51,31 +56,24 @@ public class CjsxParser extends CoffeeScriptParser {
     }
 
     private void parseTag() {
-        PsiBuilder.Marker tagMarker = this.mark();
+        PsiBuilder.Marker tagContainerMarker = this.mark();
 
         if (this.isCurrentTokenIn(CoffeeScriptTokenTypes.LT)) {
-            PsiBuilder.Marker tagHeaderMarker = this.mark();
+            PsiBuilder.Marker tagOpenOrTagSingleMarker = this.mark();
             int indent = this.getCurrentIndent();
+
             advance();
             parseTagName();
 
-            if (this.isIdentifier()) {
-                this.parseTagAttributes();
+            if (isIdentifier()) {
+                parseTagAttributes();
             }
 
-            if (this.isCurrentTokenIn(CoffeeScriptTokenTypes.GT)) {
-                this.advance();
-                this.done(tagHeaderMarker, CjsxElementType.TAG_OPEN);
+            if (isCurrentTokenIn(CoffeeScriptTokenTypes.GT)) {
+                advance();
+                done(tagOpenOrTagSingleMarker, CjsxElementType.TAG_OPEN);
 
-                PsiBuilder.Marker bodyTagMarker = mark();
-                if (this.isNewLine()) {
-                    this.parseBlock(indent, false);
-                } else {
-                    if (!isCurrentTokenIn(CjsxTokenType.LT_DIV) && (this.isExpression() || this.isStatement())) {
-                        this.parseLineWithNewScope(true);
-                    }
-                }
-                done(bodyTagMarker, CjsxElementType.TAG_BODY);
+                parseTagBody(indent);
 
                 PsiBuilder.Marker closeTagMarker = mark();
                 if (isCurrentTokenIn(CjsxTokenType.LT_DIV)) {
@@ -97,14 +95,28 @@ public class CjsxParser extends CoffeeScriptParser {
 
             } else if (this.isCurrentTokenIn(CjsxTokenType.DIV_GT)) {
                 advance();
-                done(tagHeaderMarker, CjsxElementType.TAG_SINGLE);
+                done(tagOpenOrTagSingleMarker, CjsxElementType.TAG_SINGLE);
             } else {
-                drop(tagHeaderMarker);
+                drop(tagOpenOrTagSingleMarker);
                 unexpectedTokenError("expected '>' or '/>'");
             }
         }
 
-        this.done(tagMarker, CjsxElementType.TAG_CONTAINER);
+        this.done(tagContainerMarker, CjsxElementType.TAG_CONTAINER);
+    }
+
+    private void parseTagBody(int indent) {
+        tagsNesting.push(new Object());
+        PsiBuilder.Marker bodyTagMarker = mark();
+        if (this.isNewLine()) {
+            this.parseBlock(indent, false);
+        } else {
+            if (!isCurrentTokenIn(CjsxTokenType.LT_DIV) && (this.isExpression() || this.isStatement())) {
+                this.parseLineWithNewScope(true);
+            }
+        }
+        done(bodyTagMarker, CjsxElementType.TAG_BODY);
+        tagsNesting.pop();
     }
 
     private void parseTagName() {
@@ -118,34 +130,80 @@ public class CjsxParser extends CoffeeScriptParser {
     private void parseTagAttributes() {
         PsiBuilder.Marker marker = this.mark();
 
-        while (isIdentifier()) {
-            PsiBuilder.Marker attributeMarker = this.mark();
-            parseIdentifier(true);
-            if (isCurrentTokenIn(CoffeeScriptTokenTypes.EQ)) {
-                advance();
-
-                if (isString()){
-                    parseString();
-                } else if (isCurrentTokenIn(CoffeeScriptTokenTypes.BRACE_START)){
-                    advance();
-                    parseWithPossibleWhileOrForOrIf(myExpressionInvoker);
-
-                    if (!isCurrentTokenIn(CoffeeScriptTokenTypes.BRACE_END)){
-                        unexpectedTokenError("expected '}'");
-                    }
-                    advance();
-                } else {
-                    unexpectedTokenError();
-                }
-
-                done(attributeMarker, CjsxElementType.ATTRIBUTE);
-            } else {
-                drop(attributeMarker);
-                unexpectedTokenError("expected '='");
-            }
+        while (isTagAttribute()) {
+            parseTagAttribute();
         }
 
         this.done(marker, CjsxElementType.ATTRIBUTES);
+    }
+
+    private boolean isTagAttribute() {
+        return isIdentifier();
+    }
+
+    private void parseTagAttribute() {
+        PsiBuilder.Marker marker = mark();
+
+        parseIdentifier(true);
+
+        if (isCurrentTokenIn(CoffeeScriptTokenTypes.EQ)) {
+            advance();
+            parseTagAttributeValue();
+        } else {
+            unexpectedTokenError("expected '='");
+        }
+
+        done(marker, CjsxElementType.ATTRIBUTE);
+    }
+
+    private void parseTagAttributeValue() {
+        int intent = getCurrentIndent();
+
+        if (isString()) {
+            // String value
+            parseString();
+        } else if (isCurrentTokenIn(CoffeeScriptTokenTypes.BRACE_START)) {
+            // Script interpolation
+            advance();
+            parseWithPossibleWhileOrForOrIf(myExpressionInvoker);
+
+            if (!isCurrentTokenIn(CoffeeScriptTokenTypes.BRACE_END)) {
+                unexpectedTokenError("expected '}'");
+            }
+            advance();
+        } else if (isIdentifier() || isThis()) {
+            // variable accessor
+            parseValuesAndInvocations(false, false, false, false);
+        } else {
+            unexpectedTokenError();
+        }
+    }
+
+    private boolean isInTagBody(){
+        return !tagsNesting.isEmpty();
+    }
+
+    private void parseTagInterpolation() {
+        PsiBuilder.Marker marker = mark();
+
+        if (this.isCurrentTokenIn(CoffeeScriptTokenTypes.BRACE_START)) {
+            int indent = this.getCurrentIndent();
+            advance();
+
+            if(isNewLine()){
+                parseBlock(indent, false);
+            } else {
+                parseWithPossibleWhileOrForOrIf(myExpressionInvoker);
+            }
+
+            if (isCurrentTokenIn(CoffeeScriptTokenTypes.BRACE_END)) {
+                advance();
+            } else {
+                unexpectedTokenError("expected '}'");
+            }
+        }
+
+        done(marker, CjsxElementType.TAG_INTERPOLATION);
     }
 
     private void unexpectedTokenError() {
