@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import ru.promakh.webstorm_cjsx.CjsxLanguage;
 
 public class CjsxElementType extends IElementType {
-    static public final IElementType TAG = new CjsxElementType("Tag");
+    static public final IElementType TAG_CONTAINER = new CjsxElementType("TagContainer");
     static public final IElementType TAG_SINGLE = new CjsxElementType("TagSingle");
     static public final IElementType TAG_OPEN = new CjsxElementType("TagOpen");
     static public final IElementType TAG_BODY = new CjsxElementType("TagBody");

@@ -3,7 +3,6 @@ package ru.promakh.webstorm_cjsx.lang;
 import com.intellij.lang.PsiBuilder;
 import com.intellij.psi.tree.IElementType;
 import org.coffeescript.lang.lexer.CoffeeScriptTokenTypes;
-import org.coffeescript.lang.parser.CoffeeScriptElementTypes;
 import ru.promakh.webstorm_cjsx.psi.CjsxElementType;
 import ru.promakh.webstorm_cjsx.psi.CjsxTokenType;
 
@@ -68,6 +67,7 @@ public class CjsxParser extends CoffeeScriptParser {
                 this.advance();
                 this.done(tagHeaderMarker, CjsxElementType.TAG_OPEN);
 
+                PsiBuilder.Marker bodyTagMarker = mark();
                 if (this.isNewLine()) {
                     this.parseBlock(indent, false);
                 } else {
@@ -75,6 +75,7 @@ public class CjsxParser extends CoffeeScriptParser {
                         this.parseLineWithNewScope(true);
                     }
                 }
+                done(bodyTagMarker, CjsxElementType.TAG_BODY);
 
                 PsiBuilder.Marker closeTagMarker = mark();
                 if (isCurrentTokenIn(CjsxTokenType.LT_DIV)) {
@@ -103,7 +104,7 @@ public class CjsxParser extends CoffeeScriptParser {
             }
         }
 
-        this.done(tagMarker, CjsxElementType.TAG);
+        this.done(tagMarker, CjsxElementType.TAG_CONTAINER);
     }
 
     private void parseTagName() {

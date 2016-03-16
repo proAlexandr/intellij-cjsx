@@ -10,7 +10,7 @@ import javax.swing.*;
 public class CjsxFileType extends LanguageFileType{
     public static final Icon Coffeescript_filetype = IconLoader.getIcon("/ru/promakh/webstorm_cjsx/icons/coffeescript_filetype.png");
 
-    public static CjsxFileType INSTANCE = new CjsxFileType();
+    public static final CjsxFileType INSTANCE = new CjsxFileType();
 
     private CjsxFileType() {
         super(CjsxLanguage.INSTANCE);
@@ -31,7 +31,7 @@ public class CjsxFileType extends LanguageFileType{
     @NotNull
     @Override
     public String getDefaultExtension() {
-        return "csjx";
+        return "cjsx";
     }
 
     @Nullable

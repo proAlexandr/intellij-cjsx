@@ -1,6 +1,6 @@
 <idea-plugin version="2">
     <id>ru.promakh.cjsx_plugin</id>
-    <name>CSJX language</name>
+    <name>CJSX language</name>
     <version>1.0</version>
     <vendor email="s-promakh@ya.ru" url="http://promakh.ru">Alexandr Promakh</vendor>
 
@@ -25,19 +25,16 @@
 
 
     <extensions defaultExtensionNs="com.intellij">
-        <!--<errorHandler implementation="com.intellij.diagnostic.ITNReporter"/>-->
-
-        <!--<highlightErrorFilter implementation="org.coffeescript.highlighter.CoffeeScriptErrorFilter"/>-->
-        <!--<problemFileHighlightFilter implementation="org.coffeescript.highlighter.CoffeeProblemFileHighlightFilter"/>-->
         <fileTypeFactory implementation="ru.promakh.webstorm_cjsx.CjsxFileTypeFactory"/>
         <lang.parserDefinition language="CJSX" implementationClass="ru.promakh.webstorm_cjsx.CjsxParserDefinition"/>
-        <!--<lang.parserDefinition language="CoffeeScriptLiterate" implementationClass="org.coffeescript.lang.parser.CoffeeScriptLiterateParserDefinition"/>-->
-        <!--<lang.parserDefinition language="CJSX" implementationClass="org.coffeescript.lang.parser.CoffeeScriptParserDefinition"/>-->
-        <!--<lang.parserDefinition language="CJSX" implementationClass="org.coffeescript.lang.parser.CoffeeScriptLiterateParserDefinition"/>-->
+        <lang.syntaxHighlighterFactory language="CJSX" implementationClass="ru.promakh.webstorm_cjsx.highlighter.CjsxSyntaxHighlighterFactory"/>
+        <lang.inspectionSuppressor language="CJSX" implementationClass="org.coffeescript.codeinsight.inspections.CoffeeScriptInspectionSuppressor"/>
+        <annotator language="CJSX" implementationClass="ru.promakh.webstorm_cjsx.highlighter.CjsxAnnotatingVisitor"/>
     </extensions>
 
     <actions>
         <!-- Add your actions here -->
     </actions>
+
 
 </idea-plugin>

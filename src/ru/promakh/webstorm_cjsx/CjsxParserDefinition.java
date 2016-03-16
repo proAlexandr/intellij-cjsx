@@ -9,20 +9,23 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.FileViewProvider;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.IFileElementType;
 import com.intellij.psi.tree.TokenSet;
 import org.coffeescript.lang.lexer.CoffeeScriptTokenSets;
-import org.coffeescript.lang.parser.CoffeeScriptParserDefinition;
 import org.jetbrains.annotations.NotNull;
 import ru.promakh.webstorm_cjsx.lang.CjsxParser;
+import ru.promakh.webstorm_cjsx.psi.CjsxElementType;
 import ru.promakh.webstorm_cjsx.psi.CjsxFile;
+import ru.promakh.webstorm_cjsx.psi.impl.CjsxElementImpl;
+import ru.promakh.webstorm_cjsx.psi.impl.CjsxTagCloseImpl;
+import ru.promakh.webstorm_cjsx.psi.impl.CjsxTagOpenImpl;
+import ru.promakh.webstorm_cjsx.psi.impl.CjsxTagSingleImpl;
 
 public class CjsxParserDefinition implements ParserDefinition {
 //    public static final TokenSet WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE);
 //    public static final TokenSet COMMENTS = TokenSet.create(CjsxTokenType.COMMENT);
 
-
-    private CoffeeScriptParserDefinition cpd = new CoffeeScriptParserDefinition();
     public static final IFileElementType FILE;
 
     static {
@@ -68,13 +71,21 @@ public class CjsxParserDefinition implements ParserDefinition {
     @NotNull
     @Override
     public PsiElement createElement(ASTNode node) {
-        return cpd.createElement(node);
+        IElementType nodeType = node.getElementType();
+        if (nodeType == CjsxElementType.TAG_OPEN) {
+            return new CjsxTagOpenImpl(node);
+        } else if (nodeType == CjsxElementType.TAG_CLOSE) {
+            return new CjsxTagCloseImpl(node);
+        } else if (nodeType == CjsxElementType.TAG_SINGLE) {
+            return new CjsxTagSingleImpl(node);
+        } else {
+            return new CjsxElementImpl(node);
+        }
     }
 
     @Override
     public PsiFile createFile(FileViewProvider viewProvider) {
-        PsiFile  file = new CjsxFile(viewProvider);
-        return file;
+        return new CjsxFile(viewProvider);
     }
 
     @Override
