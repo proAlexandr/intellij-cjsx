@@ -1,4 +1,4 @@
-package ru.promakh.webstorm_cjsx.highlighter;
+package ru.promakh.cjsx.highlighter;
 
 import com.intellij.openapi.fileTypes.SyntaxHighlighter;
 import com.intellij.openapi.fileTypes.SyntaxHighlighterFactory;

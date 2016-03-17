@@ -1,11 +1,11 @@
-package ru.promakh.webstorm_cjsx.psi;
+package ru.promakh.cjsx.psi;
 
 import com.intellij.extapi.psi.PsiFileBase;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.psi.FileViewProvider;
 import org.jetbrains.annotations.NotNull;
-import ru.promakh.webstorm_cjsx.CjsxFileType;
-import ru.promakh.webstorm_cjsx.CjsxLanguage;
+import ru.promakh.cjsx.CjsxFileType;
+import ru.promakh.cjsx.CjsxLanguage;
 
 public class CjsxFile extends PsiFileBase {
     public CjsxFile(@NotNull FileViewProvider viewProvider) {

@@ -1,11 +1,11 @@
-package ru.promakh.webstorm_cjsx.lang;
+package ru.promakh.cjsx.lang;
 
 import com.intellij.lang.PsiBuilder;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.util.containers.Stack;
 import org.coffeescript.lang.lexer.CoffeeScriptTokenTypes;
-import ru.promakh.webstorm_cjsx.psi.CjsxElementType;
-import ru.promakh.webstorm_cjsx.psi.CjsxTokenType;
+import ru.promakh.cjsx.psi.CjsxElementType;
+import ru.promakh.cjsx.psi.CjsxTokenType;
 
 public class CjsxParser extends CoffeeScriptParser {
     private final Stack<Object> tagsNesting = new Stack<>();

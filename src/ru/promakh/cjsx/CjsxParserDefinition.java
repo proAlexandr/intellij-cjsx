@@ -1,4 +1,4 @@
-package ru.promakh.webstorm_cjsx;
+package ru.promakh.cjsx;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.Language;
@@ -14,18 +14,15 @@ import com.intellij.psi.tree.IFileElementType;
 import com.intellij.psi.tree.TokenSet;
 import org.coffeescript.lang.lexer.CoffeeScriptTokenSets;
 import org.jetbrains.annotations.NotNull;
-import ru.promakh.webstorm_cjsx.lang.CjsxParser;
-import ru.promakh.webstorm_cjsx.psi.CjsxElementType;
-import ru.promakh.webstorm_cjsx.psi.CjsxFile;
-import ru.promakh.webstorm_cjsx.psi.impl.CjsxElementImpl;
-import ru.promakh.webstorm_cjsx.psi.impl.CjsxTagCloseImpl;
-import ru.promakh.webstorm_cjsx.psi.impl.CjsxTagOpenImpl;
-import ru.promakh.webstorm_cjsx.psi.impl.CjsxTagSingleImpl;
+import ru.promakh.cjsx.lang.CjsxParser;
+import ru.promakh.cjsx.psi.CjsxElementType;
+import ru.promakh.cjsx.psi.CjsxFile;
+import ru.promakh.cjsx.psi.impl.CjsxElementImpl;
+import ru.promakh.cjsx.psi.impl.CjsxTagCloseImpl;
+import ru.promakh.cjsx.psi.impl.CjsxTagOpenImpl;
+import ru.promakh.cjsx.psi.impl.CjsxTagSingleImpl;
 
 public class CjsxParserDefinition implements ParserDefinition {
-//    public static final TokenSet WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE);
-//    public static final TokenSet COMMENTS = TokenSet.create(CjsxTokenType.COMMENT);
-
     public static final IFileElementType FILE;
 
     static {

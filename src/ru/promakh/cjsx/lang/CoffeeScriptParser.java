@@ -1,4 +1,4 @@
-package ru.promakh.webstorm_cjsx.lang;
+package ru.promakh.cjsx.lang;
 
 //
 // Source code recreated from a .class file by IntelliJ IDEA
@@ -15,7 +15,6 @@ import com.intellij.psi.tree.TokenSet;
 import com.intellij.util.ArrayUtil;
 import com.intellij.util.containers.HashMap;
 import com.intellij.util.containers.Stack;
-import org.coffeescript.CsBundle;
 import org.coffeescript.lang.lexer.CoffeeScriptTokenTypes;
 import org.coffeescript.lang.parser.BaseCoffeeScriptParser;
 import org.coffeescript.lang.parser.CoffeeScriptElementTypes;

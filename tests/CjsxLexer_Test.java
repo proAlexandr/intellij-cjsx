@@ -1,11 +1,10 @@
 import com.intellij.lexer.FlexAdapter;
-import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.tree.IElementType;
 import org.coffeescript.lang.lexer.CoffeeScriptTokenTypes;
 import org.junit.Assert;
 import org.junit.Test;
-import ru.promakh.webstorm_cjsx.CjsxLexerAdapter;
-import ru.promakh.webstorm_cjsx.psi.CjsxTokenType;
+import ru.promakh.cjsx.CjsxLexerAdapter;
+import ru.promakh.cjsx.psi.CjsxTokenType;
 
 import java.io.IOException;
 import java.util.ArrayList;

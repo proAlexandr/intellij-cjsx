@@ -1,4 +1,4 @@
-package ru.promakh.webstorm_cjsx;
+package ru.promakh.cjsx;
 
 import com.intellij.openapi.fileTypes.FileTypeConsumer;
 import com.intellij.openapi.fileTypes.FileTypeFactory;

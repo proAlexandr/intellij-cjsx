@@ -1,4 +1,4 @@
-package ru.promakh.webstorm_cjsx.lang;
+package ru.promakh.cjsx.lang;
 
 
 import com.intellij.lexer.FlexLexer;
@@ -9,7 +9,7 @@ import java.util.Stack;
 
 import com.intellij.lang.javascript.JSTokenTypes;
 import org.coffeescript.lang.lexer.CoffeeScriptTokenTypes;
-import ru.promakh.webstorm_cjsx.psi.CjsxTokenType;
+import ru.promakh.cjsx.psi.CjsxTokenType;
 
 /**
  * The CoffeeScript lexer is responsible for generating a token stream of any CoffeeScript source file.

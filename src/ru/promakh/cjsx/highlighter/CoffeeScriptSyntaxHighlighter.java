@@ -3,7 +3,7 @@
 // (powered by Fernflower decompiler)
 //
 
-package ru.promakh.webstorm_cjsx.highlighter;
+package ru.promakh.cjsx.highlighter;
 
 import com.intellij.lang.javascript.highlighting.JSHighlighter;
 import com.intellij.lexer.Lexer;

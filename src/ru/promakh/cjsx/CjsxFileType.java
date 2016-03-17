@@ -1,4 +1,4 @@
-package ru.promakh.webstorm_cjsx;
+package ru.promakh.cjsx;
 
 import com.intellij.openapi.fileTypes.LanguageFileType;
 import com.intellij.openapi.util.IconLoader;
@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 
 public class CjsxFileType extends LanguageFileType{
-    public static final Icon Coffeescript_filetype = IconLoader.getIcon("/ru/promakh/webstorm_cjsx/icons/coffeescript_filetype.png");
+    public static final Icon Coffeescript_filetype = IconLoader.getIcon("/ru/promakh/cjsx/icons/coffeescript_filetype.png");
 
     public static final CjsxFileType INSTANCE = new CjsxFileType();
 

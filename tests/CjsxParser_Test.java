@@ -1,8 +1,6 @@
 import com.intellij.lang.*;
-import com.intellij.lang.impl.PsiBuilderImpl;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
-import com.intellij.psi.impl.file.PsiBinaryFileImpl;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.TokenSet;
 import com.intellij.util.diff.FlyweightCapableTreeStructure;
@@ -10,8 +8,8 @@ import org.coffeescript.lang.lexer.CoffeeScriptTokenTypes;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
-import ru.promakh.webstorm_cjsx.lang.CjsxParser;
-import ru.promakh.webstorm_cjsx.psi.CjsxElementType;
+import ru.promakh.cjsx.lang.CjsxParser;
+import ru.promakh.cjsx.psi.CjsxElementType;
 
 import java.io.IOException;
 

@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/intellij-cjsx.iml" filepath="$PROJECT_DIR$/intellij-cjsx.iml" />
+      <module fileurl="file://$PROJECT_DIR$/webstorm-cjsx.iml" filepath="$PROJECT_DIR$/webstorm-cjsx.iml" />
     </modules>
   </component>
 </project>

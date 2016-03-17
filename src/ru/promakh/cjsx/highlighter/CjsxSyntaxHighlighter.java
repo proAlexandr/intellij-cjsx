@@ -1,12 +1,10 @@
-package ru.promakh.webstorm_cjsx.highlighter;
+package ru.promakh.cjsx.highlighter;
 
 import com.intellij.lexer.Lexer;
-import com.intellij.openapi.editor.DefaultLanguageHighlighterColors;
 import com.intellij.openapi.editor.XmlHighlighterColors;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
-import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
-import ru.promakh.webstorm_cjsx.CjsxLexerAdapter;
+import ru.promakh.cjsx.CjsxLexerAdapter;
 
 public class CjsxSyntaxHighlighter extends CoffeeScriptSyntaxHighlighter {
     public static final TextAttributesKey TAG_NAME =

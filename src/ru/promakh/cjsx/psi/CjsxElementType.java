@@ -1,9 +1,9 @@
-package ru.promakh.webstorm_cjsx.psi;
+package ru.promakh.cjsx.psi;
 
 import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
-import ru.promakh.webstorm_cjsx.CjsxLanguage;
+import ru.promakh.cjsx.CjsxLanguage;
 
 public class CjsxElementType extends IElementType {
     static public final IElementType TAG_CONTAINER = new CjsxElementType("TagContainer");

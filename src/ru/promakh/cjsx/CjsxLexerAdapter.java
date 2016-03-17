@@ -1,10 +1,7 @@
-package ru.promakh.webstorm_cjsx;
+package ru.promakh.cjsx;
 
 import com.intellij.lexer.FlexAdapter;
-import org.coffeescript.lang.lexer.CoffeeScriptLexer;
-import ru.promakh.webstorm_cjsx.lang.CjsxLexer;
-
-import java.io.Reader;
+import ru.promakh.cjsx.lang.CjsxLexer;
 
 public class CjsxLexerAdapter extends FlexAdapter {
 

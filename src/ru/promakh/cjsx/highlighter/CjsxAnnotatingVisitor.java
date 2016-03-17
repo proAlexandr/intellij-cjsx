@@ -1,12 +1,12 @@
-package ru.promakh.webstorm_cjsx.highlighter;
+package ru.promakh.cjsx.highlighter;
 
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.psi.PsiElement;
 //import org.coffeescript.highlighter.CoffeeScriptAnnotatingVisitor;
 import org.coffeescript.highlighter.CoffeeScriptAnnotatingVisitor;
 import org.jetbrains.annotations.NotNull;
-import ru.promakh.webstorm_cjsx.psi.impl.CjsxElementImpl;
-import ru.promakh.webstorm_cjsx.psi.impl.CjsxTagImpl;
+import ru.promakh.cjsx.psi.impl.CjsxElementImpl;
+import ru.promakh.cjsx.psi.impl.CjsxTagImpl;
 
 public class CjsxAnnotatingVisitor extends CoffeeScriptAnnotatingVisitor {
 
