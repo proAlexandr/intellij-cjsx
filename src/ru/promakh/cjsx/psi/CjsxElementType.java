@@ -6,14 +6,15 @@ import org.jetbrains.annotations.NotNull;
 import ru.promakh.cjsx.CjsxLanguage;
 
 public class CjsxElementType extends IElementType {
-    static public final IElementType TAG_CONTAINER = new CjsxElementType("TagContainer");
-    static public final IElementType TAG_SINGLE = new CjsxElementType("TagSingle");
-    static public final IElementType TAG_OPEN = new CjsxElementType("TagOpen");
-    static public final IElementType TAG_BODY = new CjsxElementType("TagBody");
-    static public final IElementType TAG_CLOSE = new CjsxElementType("TagClose");
-    static public final IElementType ATTRIBUTES = new CjsxElementType("Attributes");
-    static public final IElementType ATTRIBUTE = new CjsxElementType("Attribute");
-    static public final IElementType TAG_INTERPOLATION = new CjsxElementType("TagInterpolation");
+    public static final IElementType TAG_CONTAINER = new CjsxElementType("TagContainer");
+    public static final IElementType TAG_SINGLE = new CjsxElementType("TagSingle");
+    public static final IElementType TAG_OPEN = new CjsxElementType("TagOpen");
+    public static final IElementType TAG_BODY = new CjsxElementType("TagBody");
+    public static final IElementType TAG_CLOSE = new CjsxElementType("TagClose");
+    public static final IElementType ATTRIBUTES = new CjsxElementType("Attributes");
+    public static final IElementType ATTRIBUTE = new CjsxElementType("Attribute");
+    public static final IElementType TAG_INTERPOLATION = new CjsxElementType("TagInterpolation");
+    public static final IElementType TAG_TEXT = new CjsxElementType("TagText");
 
     public CjsxElementType(@NotNull @NonNls String debugName) {
         super(debugName, CjsxLanguage.INSTANCE);

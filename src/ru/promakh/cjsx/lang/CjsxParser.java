@@ -2,57 +2,75 @@ package ru.promakh.cjsx.lang;
 
 import com.intellij.lang.PsiBuilder;
 import com.intellij.psi.tree.IElementType;
-import com.intellij.util.containers.Stack;
 import org.coffeescript.lang.lexer.CoffeeScriptTokenTypes;
 import ru.promakh.cjsx.psi.CjsxElementType;
 import ru.promakh.cjsx.psi.CjsxTokenType;
 
 public class CjsxParser extends CoffeeScriptParser {
-    private final Stack<Object> tagsNesting = new Stack<>();
+
+    public enum StackElement{
+        Tag, Interpolation
+    }
+
 
     @Override
     protected boolean parseExpression() {
-        boolean skip = false;
-        if (this.isCode()) {
-            skip = this.parseFunction();
+        if (isCode()) {
+            parseFunction();
+            return true;
         }
 
-        if (!skip) {
-            if (isCurrentTokenIn(CoffeeScriptTokenTypes.LT)) {
-                parseTag();
-            } else if (isInTagBody() && isCurrentTokenIn(CoffeeScriptTokenTypes.BRACE_START)) {
+        if (isInTagBody()){
+            if (isCurrentTokenIn(CoffeeScriptTokenTypes.BRACE_START)) {
                 parseTagInterpolation();
-            }else if (this.isCurrentTokenIn(new IElementType[]{CoffeeScriptTokenTypes.DO_KEYWORD})) {
-                this.parseDoExpression();
-            } else if (this.isCurrentTokenIn(new IElementType[]{CoffeeScriptTokenTypes.CLASS})) {
-                this.parseClass();
-            } else if (this.isIf() && !this.isPostIf()) {
-                this.parseIf();
-            } else if (this.isWhile() && !this.isPostWhile()) {
-                this.parseWhile();
-            } else if (this.isLoop()) {
-                this.parseLoop();
-            } else if (this.isVariable()) {
-                this.parseVariable();
-            } else if (this.isValue()) {
-                this.parseValuesAndInvocations(true, true, true, true);
-            } else if (this.isForBody() && !this.isPostFor()) {
-                this.parseFor();
-            } else if (this.isSwitch()) {
-                this.parseSwitch();
-            } else if (this.isCurrentTokenIn(new IElementType[]{CoffeeScriptTokenTypes.TRY})) {
-                this.parseTry();
-            } else if (this.isThrow()) {
-                this.parseThrow();
-            } else if (!this.parseYield()) {
-                if (!this.isIf() && !this.isWhile() && !this.isForBody() || this.isNewLine()) {
-                    this.error("Unexpected token");
-                }
-
-                return false;
+            } else if (isCurrentTokenIn(CoffeeScriptTokenTypes.LT)) {
+                parseTag();
+            } else {
+                parseTagText();
             }
+            return true;
+        }
+
+        if (isCurrentTokenIn(CoffeeScriptTokenTypes.LT)) {
+            parseTag();
+        } else if (this.isCurrentTokenIn(new IElementType[]{CoffeeScriptTokenTypes.DO_KEYWORD})) {
+            this.parseDoExpression();
+        } else if (this.isCurrentTokenIn(new IElementType[]{CoffeeScriptTokenTypes.CLASS})) {
+            this.parseClass();
+        } else if (this.isIf() && !this.isPostIf()) {
+            this.parseIf();
+        } else if (this.isWhile() && !this.isPostWhile()) {
+            this.parseWhile();
+        } else if (this.isLoop()) {
+            this.parseLoop();
+        } else if (this.isVariable()) {
+            this.parseVariable();
+        } else if (this.isValue()) {
+            this.parseValuesAndInvocations(true, true, true, true);
+        } else if (this.isForBody() && !this.isPostFor()) {
+            this.parseFor();
+        } else if (this.isSwitch()) {
+            this.parseSwitch();
+        } else if (this.isCurrentTokenIn(new IElementType[]{CoffeeScriptTokenTypes.TRY})) {
+            this.parseTry();
+        } else if (this.isThrow()) {
+            this.parseThrow();
+        } else if (!this.parseYield()) {
+            if (!this.isIf() && !this.isWhile() && !this.isForBody() || this.isNewLine()) {
+                this.error("Unexpected token");
+            }
+
+            return false;
         }
         return true;
+    }
+
+    private void parseTagText(){
+        PsiBuilder.Marker marker = mark();
+        while (!isCurrentTokenIn(CoffeeScriptTokenTypes.BRACE_START, CoffeeScriptTokenTypes.LT, CjsxTokenType.LT_DIV)){
+            advance();
+        }
+        done(marker, CjsxElementType.TAG_TEXT);
     }
 
     private void parseTag() {
@@ -106,17 +124,17 @@ public class CjsxParser extends CoffeeScriptParser {
     }
 
     private void parseTagBody(int indent) {
-        tagsNesting.push(new Object());
+        tagsNestingStack.push(StackElement.Tag);
         PsiBuilder.Marker bodyTagMarker = mark();
         if (this.isNewLine()) {
             this.parseBlock(indent, false);
         } else {
-            if (!isCurrentTokenIn(CjsxTokenType.LT_DIV) && (this.isExpression() || this.isStatement())) {
-                this.parseLineWithNewScope(true);
-            }
+            this.parseExpression();
+//            if (!isCurrentTokenIn(CjsxTokenType.LT_DIV) && (this.isExpression() || this.isStatement())) {
+//            }
         }
         done(bodyTagMarker, CjsxElementType.TAG_BODY);
-        tagsNesting.pop();
+        tagsNestingStack.pop();
     }
 
     private void parseTagName() {
@@ -157,13 +175,9 @@ public class CjsxParser extends CoffeeScriptParser {
     }
 
     private void parseTagAttributeValue() {
-        int intent = getCurrentIndent();
-
         if (isString()) {
-            // String value
             parseString();
         } else if (isCurrentTokenIn(CoffeeScriptTokenTypes.BRACE_START)) {
-            // Script interpolation
             advance();
             parseWithPossibleWhileOrForOrIf(myExpressionInvoker);
 
@@ -171,8 +185,7 @@ public class CjsxParser extends CoffeeScriptParser {
                 unexpectedTokenError("expected '}'");
             }
             advance();
-        } else if (isIdentifier() || isThis()) {
-            // variable accessor
+        } else if (isIdentifier() || isThis() || isAlphaNumeric() || isCurrentTokenIn(CoffeeScriptTokenTypes.BOOL)) {
             parseValuesAndInvocations(false, false, false, false);
         } else {
             unexpectedTokenError();
@@ -180,10 +193,11 @@ public class CjsxParser extends CoffeeScriptParser {
     }
 
     private boolean isInTagBody(){
-        return !tagsNesting.isEmpty();
+        return !tagsNestingStack.empty() && tagsNestingStack.peek() == StackElement.Tag;
     }
 
     private void parseTagInterpolation() {
+        tagsNestingStack.push(StackElement.Interpolation);
         PsiBuilder.Marker marker = mark();
 
         if (this.isCurrentTokenIn(CoffeeScriptTokenTypes.BRACE_START)) {
@@ -204,6 +218,7 @@ public class CjsxParser extends CoffeeScriptParser {
         }
 
         done(marker, CjsxElementType.TAG_INTERPOLATION);
+        tagsNestingStack.pop();
     }
 
     private void unexpectedTokenError() {

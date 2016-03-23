@@ -13,9 +13,8 @@ public class CjsxAnnotatingVisitor extends CoffeeScriptAnnotatingVisitor impleme
         super(psiElement, holder);
     }
 
-    @Override
     public void visitTagElement(CjsxTagImpl element) {
-        myHolder.createInfoAnnotation(element.nameIdentifier, null)
-                .setTextAttributes(CjsxSyntaxHighlighter.TAG_NAME);
+//        myHolder.createInfoAnnotation(element.nameIdentifier, null)
+//                .setTextAttributes(CjsxSyntaxHighlighter.TAG_NAME);
     }
 }

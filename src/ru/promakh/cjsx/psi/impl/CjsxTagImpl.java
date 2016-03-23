@@ -8,11 +8,9 @@ import org.jetbrains.annotations.NotNull;
 import ru.promakh.cjsx.psi.ICjsxElementVisitor;
 
 public class CjsxTagImpl extends CjsxElementImpl {
-    public final ASTNode nameIdentifier;
 
     public CjsxTagImpl(@NotNull ASTNode astNode) {
         super(astNode);
-        nameIdentifier = astNode.findChildByType(CoffeeScriptTokenTypes.IDENTIFIER);
     }
 
     public void accept(@NotNull PsiElementVisitor visitor) {
@@ -21,5 +19,9 @@ public class CjsxTagImpl extends CjsxElementImpl {
         } else {
             visitor.visitElement(this);
         }
+    }
+
+    public ASTNode nameElement(){
+        return findChildByType(CoffeeScriptTokenTypes.IDENTIFIER);
     }
 }

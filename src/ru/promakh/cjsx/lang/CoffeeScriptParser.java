@@ -39,6 +39,9 @@ public class CoffeeScriptParser extends BaseCoffeeScriptParser {
     private Map<Integer, CoffeeScriptParserMetaData> metaData = new HashMap();
     private Stack<Integer> wantedElseAtIndent = new Stack();
 
+    // костыли, потому что не делаю парсинг xml элементов
+    protected final Stack<CjsxParser.StackElement> tagsNestingStack = new Stack<>();
+
     public CoffeeScriptParser() {
     }
 
@@ -1718,6 +1721,7 @@ public class CoffeeScriptParser extends BaseCoffeeScriptParser {
     }
 
     private void parseInterpolation() {
+        tagsNestingStack.push(CjsxParser.StackElement.Interpolation);
         if(this.currentTokenIn(new IElementType[]{CoffeeScriptTokenTypes.INTERPOLATION_START})) {
             this.advance();
 
@@ -1732,7 +1736,7 @@ public class CoffeeScriptParser extends BaseCoffeeScriptParser {
 
             this.expectAndAdvance(CoffeeScriptTokenTypes.INTERPOLATION_END);
         }
-
+        tagsNestingStack.pop();
     }
 
     private void parseGeneralString(@NotNull IElementType end, boolean interpolationAllowed, @NotNull IElementType... body) {
