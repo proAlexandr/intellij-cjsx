@@ -25,6 +25,8 @@
         <lang.syntaxHighlighterFactory language="CJSX" implementationClass="ru.promakh.cjsx.highlighter.CjsxSyntaxHighlighterFactory"/>
         <lang.inspectionSuppressor language="CJSX" implementationClass="org.coffeescript.codeinsight.inspections.CoffeeScriptInspectionSuppressor"/>
         <annotator language="CJSX" implementationClass="ru.promakh.cjsx.highlighter.CjsxHighlightAnnotator"/>
+        <lang.commenter language="CJSX" implementationClass="ru.promakh.cjsx.editor.CjsxCommenter"/>
+        <multiLangCommenter implementation="ru.promakh.cjsx.editor.CjsxCommentProvider" order="before erb"/>
     </extensions>
 
     <!--<extensions defaultExtensionNs="JavaScript">-->
