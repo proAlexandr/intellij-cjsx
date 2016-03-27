@@ -67,7 +67,7 @@ public class CjsxParser extends CoffeeScriptParser {
 
     private void parseTagText(){
         PsiBuilder.Marker marker = mark();
-        while (!isCurrentTokenIn(CoffeeScriptTokenTypes.BRACE_START, CoffeeScriptTokenTypes.LT, CjsxTokenType.LT_DIV)){
+        while (!myBuilder.eof() && !isCurrentTokenIn(CoffeeScriptTokenTypes.BRACE_START, CoffeeScriptTokenTypes.LT, CjsxTokenType.LT_DIV)){
             advance();
         }
         done(marker, CjsxElementType.TAG_TEXT);
@@ -83,7 +83,7 @@ public class CjsxParser extends CoffeeScriptParser {
             advance();
             parseTagName();
 
-            if (isIdentifier()) {
+            if (isTagAttribute()) {
                 parseTagAttributes();
             }
 
@@ -156,12 +156,22 @@ public class CjsxParser extends CoffeeScriptParser {
     }
 
     private boolean isTagAttribute() {
-        return isIdentifier();
+        return isIdentifier() || isCurrentTokenIn(CoffeeScriptTokenTypes.BRACE_START);
     }
 
     private void parseTagAttribute() {
         PsiBuilder.Marker marker = mark();
 
+        if (isIdentifier()){
+            parseNameValueAttribute();
+        } else if (isCurrentTokenIn(CoffeeScriptTokenTypes.BRACE_START)){
+            parseSpreadAttribute();
+        }
+
+        done(marker, CjsxElementType.ATTRIBUTE);
+    }
+
+    private void parseNameValueAttribute(){
         parseIdentifier(true);
 
         if (isCurrentTokenIn(CoffeeScriptTokenTypes.EQ)) {
@@ -170,14 +180,13 @@ public class CjsxParser extends CoffeeScriptParser {
         } else {
             unexpectedTokenError("expected '='");
         }
-
-        done(marker, CjsxElementType.ATTRIBUTE);
     }
 
     private void parseTagAttributeValue() {
         if (isString()) {
             parseString();
         } else if (isCurrentTokenIn(CoffeeScriptTokenTypes.BRACE_START)) {
+            tagsNestingStack.push(StackElement.Interpolation);
             advance();
             parseWithPossibleWhileOrForOrIf(myExpressionInvoker);
 
@@ -185,10 +194,30 @@ public class CjsxParser extends CoffeeScriptParser {
                 unexpectedTokenError("expected '}'");
             }
             advance();
+            tagsNestingStack.pop();
         } else if (isIdentifier() || isThis() || isAlphaNumeric() || isCurrentTokenIn(CoffeeScriptTokenTypes.BOOL)) {
             parseValuesAndInvocations(false, false, false, false);
         } else {
             unexpectedTokenError();
+        }
+    }
+
+    private void parseSpreadAttribute(){
+        if (isCurrentTokenIn(CoffeeScriptTokenTypes.BRACE_START)) {
+            advance();
+            if (isCurrentTokenIn(CoffeeScriptTokenTypes.SPLAT)) {
+                advance();
+                parseValuesAndInvocations(false, false, false, false);
+                if (isCurrentTokenIn(CoffeeScriptTokenTypes.BRACE_END)){
+                    advance();
+                } else {
+                    unexpectedTokenError("expected '}'");
+                }
+            } else {
+                unexpectedTokenError("expected '...'");
+            }
+        } else {
+            unexpectedTokenError("expected '{'");
         }
     }
 
