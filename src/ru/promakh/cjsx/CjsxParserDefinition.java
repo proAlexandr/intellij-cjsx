@@ -17,10 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import ru.promakh.cjsx.lang.CjsxParser;
 import ru.promakh.cjsx.psi.CjsxElementType;
 import ru.promakh.cjsx.psi.CjsxFile;
-import ru.promakh.cjsx.psi.impl.CjsxElementImpl;
-import ru.promakh.cjsx.psi.impl.CjsxTagCloseImpl;
-import ru.promakh.cjsx.psi.impl.CjsxTagOpenImpl;
-import ru.promakh.cjsx.psi.impl.CjsxTagSingleImpl;
+import ru.promakh.cjsx.psi.impl.*;
 
 public class CjsxParserDefinition implements ParserDefinition {
     public static final IFileElementType FILE;
@@ -75,6 +72,8 @@ public class CjsxParserDefinition implements ParserDefinition {
             return new CjsxTagCloseImpl(node);
         } else if (nodeType == CjsxElementType.TAG_SINGLE) {
             return new CjsxTagSingleImpl(node);
+        } else if (nodeType == CjsxElementType.NAME_VALUE_ATTRIBUTE) {
+            return new CjsxNameValueAttributeImpl(node);
         } else {
             return new CjsxElementImpl(node);
         }

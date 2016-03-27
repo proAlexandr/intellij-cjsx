@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 
 public class CjsxFileType extends LanguageFileType{
-    public static final Icon Coffeescript_filetype = IconLoader.getIcon("/ru/promakh/cjsx/icons/coffeescript_filetype.png");
+    public static final Icon CoffeescriptFiletypeIcon = IconLoader.getIcon("/ru/promakh/cjsx/icons/coffeescript_filetype.png");
 
     public static final CjsxFileType INSTANCE = new CjsxFileType();
 
@@ -37,6 +37,6 @@ public class CjsxFileType extends LanguageFileType{
     @Nullable
     @Override
     public Icon getIcon() {
-        return Coffeescript_filetype;
+        return CoffeescriptFiletypeIcon;
     }
 }

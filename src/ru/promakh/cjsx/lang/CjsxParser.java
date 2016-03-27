@@ -172,6 +172,7 @@ public class CjsxParser extends CoffeeScriptParser {
     }
 
     private void parseNameValueAttribute(){
+        PsiBuilder.Marker marker = mark();
         parseIdentifier(true);
 
         if (isCurrentTokenIn(CoffeeScriptTokenTypes.EQ)) {
@@ -180,6 +181,7 @@ public class CjsxParser extends CoffeeScriptParser {
         } else {
             unexpectedTokenError("expected '='");
         }
+        done(marker, CjsxElementType.NAME_VALUE_ATTRIBUTE);
     }
 
     private void parseTagAttributeValue() {
@@ -203,6 +205,8 @@ public class CjsxParser extends CoffeeScriptParser {
     }
 
     private void parseSpreadAttribute(){
+        PsiBuilder.Marker marker = mark();
+
         if (isCurrentTokenIn(CoffeeScriptTokenTypes.BRACE_START)) {
             advance();
             if (isCurrentTokenIn(CoffeeScriptTokenTypes.SPLAT)) {
@@ -219,6 +223,8 @@ public class CjsxParser extends CoffeeScriptParser {
         } else {
             unexpectedTokenError("expected '{'");
         }
+
+        done(marker, CjsxElementType.SPREAD_ATTRIBUTE);
     }
 
     private boolean isInTagBody(){

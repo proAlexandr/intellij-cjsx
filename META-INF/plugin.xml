@@ -14,7 +14,7 @@
     </change-notes>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-    <idea-version since-build="141.0"/>
+    <idea-version since-build="145.0"/>
 
     <depends>com.intellij.modules.lang</depends>
     <depends>org.coffeescript</depends>
@@ -27,11 +27,11 @@
         <annotator language="CJSX" implementationClass="ru.promakh.cjsx.highlighter.CjsxHighlightAnnotator"/>
         <lang.commenter language="CJSX" implementationClass="ru.promakh.cjsx.editor.CjsxCommenter"/>
         <multiLangCommenter implementation="ru.promakh.cjsx.editor.CjsxCommentProvider" order="before erb"/>
+        <!--<codeStyleSettingsProvider implementation="ru.promakh.cjsx.formatter.CjsxCodeStyleSettingsProvider"/>-->
+        <!--<langCodeStyleSettingsProvider implementation="ru.promakh.cjsx.formatter.CjsxLanguageCodeStyleSettingsProvider"/>-->
+        <!--<psi.referenceContributor implementation="org.coffeescript.lang.psi.CoffeeScriptReferenceContributor"/>-->
+        <colorSettingsPage implementation="ru.promakh.cjsx.highlighter.CjsxColorSettingsPage"/>
     </extensions>
-
-    <!--<extensions defaultExtensionNs="JavaScript">-->
-        <!--<analysisHandlersFactory language="CJSX" implementationClass="ru.promakh.cjsx.highlighter.CjsxAnalysisHandlersFactory"/>-->
-    <!--</extensions>-->
 
     <actions>
         <!-- Add your actions here -->
